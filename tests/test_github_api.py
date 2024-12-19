@@ -58,3 +58,26 @@ class TestGitHubAPI:
         result = GitHubAPI.list_stargazers("octocat", "Hello-World")
 
         assert result == ["user1", "user2"]
+
+    def test_get_repo_starred(self, monkeypatch):
+        def mock_api_call(endpoint):
+            return [{"full_name": "user1/mySuperRepo"}, {"full_name": "user2/mySuperRepo"}]
+
+        monkeypatch.setattr(GitHubAPI, "api_call", mock_api_call)
+
+        result = GitHubAPI.get_repo_starred("toto")
+        assert result == [{"full_name": "user1/mySuperRepo"}, {"full_name": "user2/mySuperRepo"}]
+
+    def test_list_repo_starred(self, monkeypatch):
+        def mock_get_repo_starred(user):
+            return [{"full_name": "user1/mySuperRepo"}, {"full_name": "user2/mySuperRepo"}]
+
+        def mock_extract_field(datas, field):
+            return [data[field] for data in datas]
+
+        monkeypatch.setattr(GitHubAPI, "get_repo_starred", mock_get_repo_starred)
+        monkeypatch.setattr("src.utils.extract_field", mock_extract_field)
+
+        result = GitHubAPI.list_repo_starred("toto")
+
+        assert result == ["user1/mySuperRepo", "user2/mySuperRepo"]

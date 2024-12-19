@@ -23,3 +23,13 @@ class GitHubAPI:
     def list_stargazers(user, repo):
         datas = GitHubAPI.get_stargazers(user, repo)
         return extract_field(datas, 'login')
+
+    @staticmethod
+    def get_repo_starred(user):
+        endpoint = f"users/{user}/starred"
+        return GitHubAPI.api_call(endpoint)
+
+    @staticmethod
+    def list_repo_starred(user):
+        datas = GitHubAPI.get_repo_starred(user)
+        return extract_field(datas, 'full_name')
